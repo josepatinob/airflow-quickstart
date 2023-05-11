@@ -129,3 +129,33 @@ def get_historical_weather_from_city_coordinates(coordinates):
         )
 
     return max_temp_per_day
+
+def call_espn_api():
+    """Fetches NBA games from ESPN API"""
+
+    r = requests.get(
+        f"https://api-partners.espn.com/v2/video/basketball/nba/events?apikey=nba_18cdxtbo9a9551bsedho5rbvkp&dates=20230507"
+    )
+
+    # if the API call is successful log the current temp
+    if r.status_code == 200:
+        games = pd.DataFrame(r.json()["events"])
+
+    else:
+
+        games = pd.DataFrame(
+            {
+                "events": ["Null"],
+            }
+        )
+
+        gv.task_log.warn(
+            f"""
+                Failed to fetch data from ESPN API.
+                Request returned {r.status_code}.
+            """
+        )
+
+    return games
+
+ 
